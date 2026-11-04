@@ -19,10 +19,12 @@ sem_t semB_C; // Notifica a C que B escribió Cifra 2
 void* HiloA(void* arg) {
     int cifra_a = 15;
     
-    // TO-DO Proteger escritura con Mutex e inicializar variable compartida
+    pthread_mutex_lock(&mutex_variable);
+    variable_compartida=cifra_a;
+    printf("[Hilo A] Escribió la cifra: %d\n", variable_compartida);
+    pthread_mutex_unlock(&mutex_variable);
     
-    
-    // TO-DO Notificar a Hilo C
+    sem_post(&semA_C);
     return NULL;
 }
 
@@ -30,13 +32,13 @@ void* HiloA(void* arg) {
 void* HiloB(void* arg) {
     int cifra_b = 25;
     
-    // TO-DO Esperar a que Hilo C haya leído Cifra 1 y limpiado la variable
-    
-    // TO-DO Proteger escritura con Mutex y actualizar variable compartida
-   
-    
-    // TO-DO Notificar a Hilo C
-	
+    sem_wait(&semC_B);
+    pthread_mutex_lock(&mutex_variable);
+    variable_compartida=cifra_b;
+    printf("[Hilo B] Escribió la cifra: %d\n", variable_compartida);
+    pthread_mutex_unlock(&mutex_variable);
+
+	sem_post(&semB_C)
     return NULL;
 }
 
